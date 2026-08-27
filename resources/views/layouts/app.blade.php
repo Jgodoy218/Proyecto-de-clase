@@ -13,16 +13,6 @@
 <body>
 
     <header class="site-header">
-        <nav class="nav container">
-            <a href="{{ url('/') }}" class="brand">
-                <span class="ball">⚽</span> Transfer<span class="brand-suffix">Market</span>
-            </a>
-            <ul class="nav-links">
-                <li><a href="{{ url('/') }}">Inicio</a></li>
-                <li><a href="{{ route('product.index') }}">Mercado</a></li>
-                <li><a href="{{ route('product.create') }}" class="is-cta">Fichar jugador</a></li>
-            </ul>
-        </nav>
 
         <div class="ticker" aria-label="Últimos traspasos">
             @php
@@ -33,7 +23,6 @@
                     ['name' => 'T. Kowalski', 'from' => 'Varsovia CF', 'to' => 'Sevilla Blanca', 'fee' => '€47M'],
                     ['name' => 'M. Duarte', 'from' => 'Belém SC', 'to' => 'Manchester Verde', 'fee' => '€110M'],
                 ];
-                // se repite una vez para que la animación cíclica no muestre huecos
                 $news = array_merge($news, $news);
             @endphp
             <div class="ticker-track">
@@ -45,17 +34,23 @@
                 @endforeach
             </div>
         </div>
+
+        <nav class="nav container">
+            <a href="{{ url('/') }}" class="brand">
+                <span class="ball">⚽</span>
+                Transfer<span class="brand-suffix">Market</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url('/') }}">Inicio</a></li>
+                <li><a href="{{ route('players.index') }}">Jugadores</a></li>
+                <li><a href="{{ route('scouting.create') }}" class="is-cta">Fichar</a></li>
+            </ul>
+        </nav>
+
     </header>
 
     <main>
         @yield('content')
     </main>
-
-    <footer class="site-footer">
-        <div class="container">
-            TransferMarket &copy; {{ date('Y') }} — Proyecto académico de e-commerce de fichajes de fútbol.
-        </div>
-    </footer>
-
 </body>
 </html>
