@@ -23,12 +23,16 @@
                     ['name' => 'T. Kowalski', 'from' => 'Varsovia CF', 'to' => 'Sevilla Blanca', 'fee' => '€47M'],
                     ['name' => 'M. Duarte', 'from' => 'Belém SC', 'to' => 'Manchester Verde', 'fee' => '€110M'],
                 ];
+
                 $news = array_merge($news, $news);
             @endphp
+
             <div class="ticker-track">
                 @foreach ($news as $item)
                     <span class="ticker-item">
-                        {{ $item['name'] }} <span class="arrow">→</span> {{ $item['to'] }}
+                        {{ $item['name'] }}
+                        <span class="arrow">→</span>
+                        {{ $item['to'] }}
                         <span class="fee">{{ $item['fee'] }}</span>
                     </span>
                 @endforeach
@@ -40,10 +44,19 @@
                 <span class="ball">⚽</span>
                 Transfer<span class="brand-suffix">Market</span>
             </a>
+
             <ul class="nav-links">
-                <li><a href="{{ url('/') }}">Inicio</a></li>
-                <li><a href="{{ route('players.index') }}">Jugadores</a></li>
-                <li><a href="{{ route('scouting.create') }}" class="is-cta">Fichar</a></li>
+                <li>
+                    <a href="{{ url('/') }}">Inicio</a>
+                </li>
+
+                <li>
+                    <a href="{{ route('product.index') }}">Jugadores</a>
+                </li>
+
+                <li>
+                    <a href="{{ route('product.create') }}" class="is-cta">Fichar</a>
+                </li>
             </ul>
         </nav>
 
@@ -52,5 +65,6 @@
     <main>
         @yield('content')
     </main>
+
 </body>
 </html>
