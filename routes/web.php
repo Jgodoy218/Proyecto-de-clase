@@ -1,20 +1,32 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', HomeController::class);
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::prefix('product')->controller(ProductController::class)->name('product.')->group(function () {
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Mercado
+    Route::get('/', 'index')->name('index');
+
+    // Usuarios autenticados
+    Route::middleware('auth')->group(function () {
+
+        // Crear jugador
+        Route::get('/create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+
+        // Comprar jugador
+        Route::post('/{idProduct}/buy', 'buy')->name('buy');
+
+        // Vender jugador
+        Route::post('/{idProduct}/sell', 'sell')->name('sell');
+    });
+
+    // Ver ficha del jugador
+    Route::get('/{idProduct}', 'show')->name('show');
 });
 
 require __DIR__.'/auth.php';

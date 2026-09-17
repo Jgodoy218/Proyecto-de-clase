@@ -5,16 +5,15 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProductRequest;
 use App\Models\Category;
 use App\Models\Product;
-use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
     /**
-     * Mostrar todos los productos.
+     * Mostrar jugadores disponibles en el mercado.
      */
     public function index()
     {
-        $listaDeProductos = Product::all();
+        $listaDeProductos = Product::whereDoesntHave('owners')->get();
 
         return view('product.index', [
             'players' => $listaDeProductos
@@ -22,7 +21,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Mostrar formulario para crear un producto.
+     * Mostrar formulario para crear un jugador.
      */
     public function create()
     {
@@ -34,7 +33,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Guardar un nuevo producto.
+     * Crear jugador.
      */
     public function store(ProductRequest $request)
     {
@@ -46,15 +45,60 @@ class ProductController extends Controller
     }
 
     /**
-     * Mostrar un producto específico.
+     * Mostrar ficha del jugador.
      */
     public function show($idProduct)
     {
         $producto = Product::findOrFail($idProduct);
 
         return view('product.show', [
-            'producto' => $producto
+            'player' => $producto
         ]);
+    }
+
+    /**
+     * Comprar jugador.
+     */
+    public function buy($idProduct)
+    {
+        $producto = Product::findOrFail($idProduct);
+
+        if ($producto->owners()->exists()) {
+            return redirect()
+                ->route('product.index')
+                ->with('error', 'Este jugador ya fue comprado.');
+        }
+
+        auth()->user()->products()->attach($producto->id);
+
+        return redirect()
+            ->route('product.show', $producto->id)
+            ->with('success', '¡Jugador comprado correctamente!');
+    }
+
+    /**
+     * Vender jugador.
+     */
+    public function sell($idProduct)
+    {
+        $producto = Product::findOrFail($idProduct);
+
+        $usuario = auth()->user();
+
+        if (!$usuario->products()
+            ->where('product_id', $producto->id)
+            ->exists()) {
+
+            return redirect()
+                ->route('product.index')
+                ->with('error', 'Este jugador no pertenece a tu plantilla.');
+        }
+
+        $usuario->products()->detach($producto->id);
+
+        return redirect()
+            ->route('product.index')
+            ->with('success', '¡Jugador puesto nuevamente en venta!');
     }
 
     /**
@@ -73,7 +117,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Actualizar un producto.
+     * Actualizar jugador.
      */
     public function update(ProductRequest $request, $idProduct)
     {
@@ -87,7 +131,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Eliminar un producto.
+     * Eliminar jugador.
      */
     public function destroy($idProduct)
     {
