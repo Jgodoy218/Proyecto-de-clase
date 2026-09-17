@@ -1,36 +1,20 @@
 <?php
 
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', HomeController::class);
+Route::get('/', function () {
+    return view('welcome');
+});
 
-Route::prefix('product')
-    ->controller(ProductController::class)
-    ->name('product.')
-    ->group(function () {
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-        // Listar productos
-        Route::get('/', 'index')->name('index');
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
-        // Formulario para crear
-        Route::get('/create', 'create')->name('create');
-
-        // Guardar nuevo producto
-        Route::post('/', 'store')->name('store');
-
-        // Formulario para editar
-        Route::get('/{idProduct}/edit', 'edit')->name('edit');
-
-        // Actualizar producto
-        Route::put('/{idProduct}', 'update')->name('update');
-
-        // Eliminar producto
-        Route::delete('/{idProduct}', 'destroy')->name('destroy');
-
-        // Ver detalle
-        Route::get('/{idProduct}', 'show')->name('show');
-    });
-
-// Todo apuntando al mismo CSS ubicado en la carpeta public y se llama style.css
+require __DIR__.'/auth.php';
