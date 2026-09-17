@@ -4,96 +4,178 @@
 
 @section('content')
 
-    <section class="section container">
-        <a href="{{ route('product.index') }}" class="back-link">&larr; Volver al mercado</a>
+<section class="section container">
 
-        <div class="section-head">
-            <div>
-                <span class="eyebrow">Nueva ficha</span>
-                <h1>Fichar nuevo jugador</h1>
-                <p>Completa el reporte de scouting. Estos datos formarán la ficha pública que verán los clubes interesados.</p>
+    <a href="{{ route('product.index') }}" class="back-link">
+        &larr; Volver al mercado
+    </a>
+
+    <div class="section-head">
+        <div>
+            <span class="eyebrow">Nueva ficha</span>
+
+            <h1>Fichar nuevo jugador</h1>
+
+            <p>
+                Completa el reporte de scouting. Estos datos formarán
+                la ficha pública que verán los clubes interesados.
+            </p>
+        </div>
+    </div>
+
+    @if ($errors->any())
+        <div class="error-box">
+            <strong>Hay algunos errores:</strong>
+
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <form
+        class="scout-sheet"
+        action="{{ route('product.store') }}"
+        method="POST"
+    >
+
+        @csrf
+
+        <div class="form-grid">
+
+            {{-- NOMBRE --}}
+            <div class="field full">
+
+                <label for="name">
+                    Nombre del jugador
+                </label>
+
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value="{{ old('name') }}"
+                    placeholder="Ej: Federico Valverde"
+                    required
+                >
+
             </div>
+
+
+            {{-- CATEGORÍA --}}
+            <div class="field full">
+
+                <label for="category_id">
+                    Categoría
+                </label>
+
+                <select
+                    id="category_id"
+                    name="category_id"
+                    required
+                >
+
+                    <option value="">
+                        Selecciona una categoría...
+                    </option>
+
+                    @foreach ($categories as $category)
+
+                        <option
+                            value="{{ $category->id }}"
+                            {{ old('category_id') == $category->id ? 'selected' : '' }}
+                        >
+                            {{ $category->name }}
+                        </option>
+
+                    @endforeach
+
+                </select>
+
+            </div>
+
+
+            {{-- PRECIO --}}
+            <div class="field">
+
+                <label for="price">
+                    Precio de traspaso (€)
+                </label>
+
+                <input
+                    type="number"
+                    id="price"
+                    name="price"
+                    value="{{ old('price') }}"
+                    min="0"
+                    step="100000"
+                    placeholder="45000000"
+                    required
+                >
+
+            </div>
+
+
+            {{-- DESCRIPCIÓN --}}
+            <div class="field full">
+
+                <label for="description">
+                    Descripción / reporte de scouting
+                </label>
+
+                <textarea
+                    id="description"
+                    name="description"
+                    rows="6"
+                    placeholder="Características técnicas, fortalezas, historial del jugador..."
+                    required
+                >{{ old('description') }}</textarea>
+
+            </div>
+
         </div>
 
-        {{-- Nota: para que este formulario guarde datos de verdad hace falta
-             agregar una ruta POST (Route::post('/product', 'store')) y un
-             método store() en ProductController que valide y persista los datos. --}}
-        <form class="scout-sheet" action="{{ url('/product') }}" method="POST">
-            @csrf
 
-            <div class="form-grid">
-                <div class="field full">
-                    <label for="name">Nombre completo</label>
-                    <input type="text" id="name" name="name" placeholder="Ej: Diego Ferreira" required>
-                </div>
+        <div class="form-actions">
 
-                <div class="field">
-                    <label for="position">Posición</label>
-                    <select id="position" name="position" required>
-                        <option value="">Selecciona...</option>
-                        <option value="POR">Portero</option>
-                        <option value="DEF">Defensa</option>
-                        <option value="MED">Mediocampista</option>
-                        <option value="DEL">Delantero</option>
-                    </select>
-                </div>
+            <button
+                type="submit"
+                class="btn btn-gold"
+            >
+                Publicar ficha
+            </button>
 
-                <div class="field">
-                    <label for="foot">Pierna hábil</label>
-                    <select id="foot" name="foot" required>
-                        <option value="">Selecciona...</option>
-                        <option value="Derecha">Derecha</option>
-                        <option value="Izquierda">Izquierda</option>
-                        <option value="Ambidiestro">Ambidiestro</option>
-                    </select>
-                </div>
+            <a
+                href="{{ route('product.index') }}"
+                class="btn btn-outline-dark"
+            >
+                Cancelar
+            </a>
 
-                <div class="field">
-                    <label for="age">Edad</label>
-                    <input type="number" id="age" name="age" min="15" max="45" placeholder="24" required>
-                </div>
+        </div>
 
-                <div class="field">
-                    <label for="nationality">Nacionalidad</label>
-                    <input type="text" id="nationality" name="nationality" placeholder="Ej: Brasil" required>
-                </div>
+    </form>
 
-                <div class="field">
-                    <label for="height">Estatura (cm)</label>
-                    <input type="number" id="height" name="height" min="140" max="220" placeholder="182" required>
-                </div>
+</section>
 
-                <div class="field">
-                    <label for="weight">Peso (kg)</label>
-                    <input type="number" id="weight" name="weight" min="45" max="120" placeholder="76" required>
-                </div>
 
-                <div class="field">
-                    <label for="club">Club actual</label>
-                    <input type="text" id="club" name="club" placeholder="Ej: Norte United" required>
-                </div>
+<style>
 
-                <div class="field">
-                    <label for="price">Precio de traspaso (€)</label>
-                    <input type="number" id="price" name="price" min="0" step="100000" placeholder="45000000" required>
-                </div>
+.error-box {
+    margin-bottom: 20px;
+    padding: 15px 20px;
+    border-radius: 10px;
+    background: #ffe8e8;
+    border: 1px solid #d9534f;
+    color: #842029;
+}
 
-                <div class="field full">
-                    <label for="image">URL de la imagen / foto del jugador</label>
-                    <input type="url" id="image" name="image" placeholder="https://...">
-                </div>
+.error-box ul {
+    margin: 8px 0 0 20px;
+}
 
-                <div class="field full">
-                    <label for="description">Descripción / reporte de scouting</label>
-                    <textarea id="description" name="description" placeholder="Características técnicas, fortalezas, historial de clubes..."></textarea>
-                </div>
-            </div>
-
-            <div class="form-actions">
-                <button type="submit" class="btn btn-gold">Publicar ficha</button>
-                <span class="form-hint">Los campos marcados son obligatorios.</span>
-            </div>
-        </form>
-    </section>
+</style>
 
 @endsection
