@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProductRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -108,22 +109,41 @@ class ProductController extends Controller
         ];
     }
 
+    /**
+     * Mostrar todos los productos.
+     */
     public function index()
     {
-        // Obtener los productos de la base de datos
         $listaDeProductos = Product::all();
 
-        // Enviar los productos a la vista usando la variable $players
         return view('product.index', [
             'players' => $listaDeProductos
         ]);
     }
 
+    /**
+     * Mostrar formulario para crear un producto.
+     */
     public function create()
     {
         return view('product.create');
     }
 
+    /**
+     * Guardar un nuevo producto.
+     */
+    public function store(ProductRequest $request)
+    {
+        $producto = Product::create($request->validated());
+
+        return redirect()
+            ->route('product.index')
+            ->with('success', 'Producto creado correctamente.');
+    }
+
+    /**
+     * Mostrar un producto específico.
+     */
     public function show($idProduct)
     {
         $producto = Product::findOrFail($idProduct);
@@ -131,5 +151,45 @@ class ProductController extends Controller
         return view('product.show', [
             'producto' => $producto
         ]);
+    }
+
+    /**
+     * Mostrar formulario para editar un producto.
+     */
+    public function edit($idProduct)
+    {
+        $producto = Product::findOrFail($idProduct);
+
+        return view('product.edit', [
+            'producto' => $producto
+        ]);
+    }
+
+    /**
+     * Actualizar un producto.
+     */
+    public function update(ProductRequest $request, $idProduct)
+    {
+        $producto = Product::findOrFail($idProduct);
+
+        $producto->update($request->validated());
+
+        return redirect()
+            ->route('product.index')
+            ->with('success', 'Producto actualizado correctamente.');
+    }
+
+    /**
+     * Eliminar un producto.
+     */
+    public function destroy($idProduct)
+    {
+        $producto = Product::findOrFail($idProduct);
+
+        $producto->delete();
+
+        return redirect()
+            ->route('product.index')
+            ->with('success', 'Producto eliminado correctamente.');
     }
 }
